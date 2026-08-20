@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A simple, accessible calculator with light and dark modes."
+    />
+    <title>Basic Calculator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="toolbar">
+        <h1>Calculator</h1>
+        <button
+          type="button"
+          id="theme-toggle"
+          class="theme-toggle"
+          aria-label="Switch to dark mode"
+        >
+          <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+          <span class="theme-toggle-label">Dark</span>
+        </button>
+      </header>
+
+      <main>
+        <section class="calculator" aria-label="Calculator">
+          <div class="display">
+            <div id="expression" class="expression" aria-live="polite"></div>
+            <div
+              id="result"
+              class="result"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              0
+            </div>
+          </div>
+
+          <div class="keys" role="group" aria-label="Calculator keys">
+            <button type="button" data-action="clear">AC</button>
+            <button type="button" data-action="backspace">⌫</button>
+            <button type="button" data-action="percent">%</button>
+            <button type="button" data-operator="÷">÷</button>
+
+            <button type="button" data-digit="7">7</button>
+            <button type="button" data-digit="8">8</button>
+            <button type="button" data-digit="9">9</button>
+            <button type="button" data-operator="×">×</button>
+
+            <button type="button" data-digit="4">4</button>
+            <button type="button" data-digit="5">5</button>
+            <button type="button" data-digit="6">6</button>
+            <button type="button" data-operator="−">−</button>
+
+            <button type="button" data-digit="1">1</button>
+            <button type="button" data-digit="2">2</button>
+            <button type="button" data-digit="3">3</button>
+            <button type="button" data-operator="+">+</button>
+
+            <button type="button" data-digit="0" class="span-2">0</button>
+            <button type="button" data-action="decimal">.</button>
+            <button type="button" data-action="equals" class="equals">=</button>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>Keyboard: numbers, +, −, *, /, Enter, Backspace, Escape.</p>
+      </footer>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
