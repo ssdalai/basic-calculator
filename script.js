@@ -3,11 +3,14 @@ const resultEl = document.getElementById("result");
 const themeToggle = document.getElementById("theme-toggle");
 
 const THEME_KEY = "basic-calculator-theme";
+const HISTORY_KEY = "basic-calculator-history";
+const MAX_HISTORY = 20;
 
 let current = "0";
 let stored = null;
 let operator = null;
 let justEvaluated = false;
+let history = loadHistory();
 
 function formatNumber(value) {
   if (!Number.isFinite(value)) {
@@ -92,6 +95,105 @@ function applyPercent() {
   updateDisplay();
 }
 
+function loadHistory() {
+  try {
+    const saved = localStorage.getItem(HISTORY_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory() {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  } catch {
+    // localStorage might be unavailable; ignore
+  }
+}
+
+function addToHistory(expression, result) {
+  history.unshift({ expression, result });
+  if (history.length > MAX_HISTORY) {
+    history = history.slice(0, MAX_HISTORY);
+  }
+  saveHistory();
+  renderHistory();
+}
+
+function clearHistory() {
+  history = [];
+  saveHistory();
+  renderHistory();
+}
+
+const historyPanel = document.getElementById("history-panel");
+const historyToggle = document.getElementById("history-toggle");
+const historyClose = document.getElementById("history-close");
+const historyClear = document.getElementById("history-clear");
+const historyList = document.querySelector(".history-list");
+const historyBackdrop = document.getElementById("history-backdrop");
+
+function renderHistory() {
+  historyList.innerHTML = "";
+
+  history.forEach((entry, index) => {
+    const item = document.createElement("button");
+    item.type = "button";
+    item.className = "history-item";
+    item.setAttribute("role", "listitem");
+    item.dataset.index = String(index);
+    item.setAttribute("aria-label", `${entry.expression} = ${entry.result}`);
+
+    const expr = document.createElement("div");
+    expr.className = "history-expression";
+    expr.textContent = entry.expression;
+
+    const result = document.createElement("div");
+    result.className = "history-result";
+    result.textContent = entry.result;
+
+    item.append(expr, result);
+    historyList.append(item);
+  });
+}
+
+function openHistory() {
+  historyPanel.classList.add("open");
+  historyPanel.setAttribute("aria-hidden", "false");
+  historyBackdrop.classList.add("active");
+  historyToggle.setAttribute("aria-expanded", "true");
+  body.classList.add("history-open");
+}
+
+function closeHistory() {
+  historyPanel.classList.remove("open");
+  historyPanel.setAttribute("aria-hidden", "true");
+  historyBackdrop.classList.remove("active");
+  historyToggle.setAttribute("aria-expanded", "false");
+  body.classList.remove("history-open");
+}
+
+function toggleHistory() {
+  if (historyPanel.classList.contains("open")) {
+    closeHistory();
+  } else {
+    openHistory();
+  }
+}
+
+function applyHistoryEntry(index) {
+  const entry = history[index];
+  if (!entry) return;
+
+  current = entry.result;
+  stored = null;
+  operator = null;
+  justEvaluated = false;
+  closeHistory();
+  updateDisplay();
+}
+
 function compute(a, op, b) {
   switch (op) {
     case "+":
@@ -128,10 +230,14 @@ function equals() {
   }
 
   const result = compute(stored, operator, Number(current));
+  const expressionText = `${formatNumber(stored)} ${operator} ${formatNumber(
+    Number(current)
+  )}`;
   current = formatNumber(result);
   stored = Number.isFinite(result) ? result : null;
   operator = null;
   justEvaluated = true;
+  addToHistory(expressionText, current);
   updateDisplay();
 }
 
@@ -224,8 +330,23 @@ document.addEventListener("keydown", (event) => {
     clearAll();
   } else if (key === "%") {
     applyPercent();
+  } else if (key.toLowerCase() === "h") {
+    toggleHistory();
   }
 });
 
+historyToggle.addEventListener("click", toggleHistory);
+historyClose.addEventListener("click", closeHistory);
+historyBackdrop.addEventListener("click", closeHistory);
+historyClear.addEventListener("click", clearHistory);
+
+historyList.addEventListener("click", (event) => {
+  const item = event.target.closest(".history-item");
+  if (!item) return;
+  const index = Number(item.dataset.index);
+  applyHistoryEntry(index);
+});
+
 initTheme();
+renderHistory();
 updateDisplay();
