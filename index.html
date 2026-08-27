@@ -14,15 +14,26 @@
     <div class="app">
       <header class="toolbar">
         <h1>Calculator</h1>
-        <button
-          type="button"
-          id="theme-toggle"
-          class="theme-toggle"
-          aria-label="Switch to dark mode"
-        >
-          <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
-          <span class="theme-toggle-label">Dark</span>
-        </button>
+        <div class="toolbar-actions">
+          <button
+            type="button"
+            id="history-toggle"
+            class="history-toggle"
+            aria-label="Show calculation history"
+            aria-expanded="false"
+          >
+            <span aria-hidden="true">📜</span>
+          </button>
+          <button
+            type="button"
+            id="theme-toggle"
+            class="theme-toggle"
+            aria-label="Switch to dark mode"
+          >
+            <span class="theme-toggle-icon" aria-hidden="true">🌙</span>
+            <span class="theme-toggle-label">Dark</span>
+          </button>
+        </div>
       </header>
 
       <main>
@@ -72,6 +83,36 @@
         <p>Keyboard: numbers, +, −, *, /, Enter, Backspace, Escape.</p>
       </footer>
     </div>
+    <aside
+      id="history-panel"
+      class="history-panel"
+      role="dialog"
+      aria-label="Calculation history"
+      aria-hidden="true"
+    >
+      <header class="history-header">
+        <h2>History</h2>
+        <button
+          type="button"
+          id="history-close"
+          class="history-close"
+          aria-label="Close history"
+        >
+          <span aria-hidden="true">✕</span>
+        </button>
+      </header>
+      <div class="history-list" role="list"></div>
+      <footer class="history-footer">
+        <button
+          type="button"
+          id="history-clear"
+          class="history-clear"
+        >
+          Clear All
+        </button>
+      </footer>
+    </aside>
+    <div id="history-backdrop" class="history-backdrop"></div>
     <script src="script.js"></script>
   </body>
 </html>
